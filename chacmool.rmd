@@ -5,7 +5,7 @@ date: Wednesday, Oct 30, 2014
 output: html_document
 ---
 
-# A Brief Case Study: Gender Research and the Role of Feminist Theory (Chacamool presentation)
+## A Brief Case Study: Gender Research and the Role of Feminist Theory (Chacamool presentation)
 
 Here we provide the code used to generate the figures in the 
 presentation.
@@ -15,9 +15,11 @@ We can share our data by request, but we're not sure that
 the JSTOR terms of service allow us to post it publically. 
 
 ```{r setup}
-library(devtools) # Windows users need Rtools, OSX users need XCode
+# If you don't already have JSTORr, then  you need  to 
 # download and install the package (do this only once ever per computer)
-install_github("benmarwick/JSTORr")
+# uncomment and run the next two lines:
+# library(devtools) # Windows users need Rtools, OSX users need XCode
+# install_github("benmarwick/JSTORr")
 library(JSTORr)
 ```
 
@@ -36,21 +38,21 @@ load("F:/My Documents/My UW/Research/1402 JSTOR text/corpus/five_journals.RData"
 
 ```{r}
 JSTOR_2words(unpack_multi, "gender", c("feminism", "feminist"), span = 0.48, yearfrom = 1970)
-ggsave("figures/2words_gender_feminism.png")
-ggsave("figures/2words_gender_feminism.svg")
+ggsave("figure/2words_gender_feminism.png")
+ggsave("figure/2words_gender_feminism.svg")
 ```
 
 ```{r}
 JSTOR_2wordcor(unpack_multi,"gender",c("hunt","hunter","gatherer","gather","role","division","labor"), span = 0.5, yearfrom = 1970)
-ggsave("figures/2words_gender_labor.png")
-ggsave("figures/2words_gender_labor.svg")
+ggsave("figure/2words_gender_labor.png")
+ggsave("figure/2words_gender_labor.svg")
 ```
 
 
 ```{r}
 JSTOR_2wordcor(unpack_multi,"gender",c("intersectionality","race","queer","identity","intersectional","sexuality"), span = 0.6, yearfrom = 1970)
-ggsave("figures/2words_gender_intersect.png")
-ggsave("figures/2words_gender_intersect.svg")
+ggsave("figure/2words_gender_intersect.png")
+ggsave("figure/2words_gender_intersect.svg")
 ```
 
 ### Some summary statistics on the words "gender", "feminist", and "feminism"
@@ -87,7 +89,7 @@ The total number of articles is `r number_of_articles`
 # subset to get only articles that have the word 'gender'
 nouns <- JSTOR_dtmofnouns(unpack_multi, word = "gender", sparse = 1, POStag = TRUE)
 # do cluster analysis 
-JSTOR_clusterbywords(nouns, "gender", f = 0.01)
+gender_cluster <- JSTOR_clusterbywords(nouns, "gender", f = 0.01)
 ```
 
 
