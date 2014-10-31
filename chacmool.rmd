@@ -1,0 +1,96 @@
+---
+title: ""
+author: Ian Kretzler & Ben Marwick
+date: Wednesday, Oct 30, 2014
+output: html_document
+---
+
+# A Brief Case Study: Gender Research and the Role of Feminist Theory (Chacamool presentation)
+
+Here we provide the code used to generate the figures in the 
+presentation.
+
+The data can be obtained freely from http://dfr.jstor.org/ 
+We can share our data by request, but we're not sure that
+the JSTOR terms of service allow us to post it publically. 
+
+```{r setup}
+library(devtools) # Windows users need Rtools, OSX users need XCode
+# download and install the package (do this only once ever per computer)
+install_github("benmarwick/JSTORr")
+library(JSTORr)
+```
+
+
+```{r get-data}
+## The TOS for JSTOR DFR does not appear to allow redistribution of the data
+## so we do not include it here. Please contact us if you'd like a copy and 
+## we'll send it to you. You should be able to reproduce our dataset by
+## searching JSTOR DFR and filtering 'Article Type' on 'Research article ' and 
+## 'Miscellaneous', for each of the journal titles we used here.  
+
+# five journals data
+load("F:/My Documents/My UW/Research/1402 JSTOR text/corpus/five_journals.RData")
+```
+
+
+```{r}
+JSTOR_2words(unpack_multi, "gender", c("feminism", "feminist"), span = 0.48, yearfrom = 1970)
+ggsave("figures/2words_gender_feminism.png")
+ggsave("figures/2words_gender_feminism.svg")
+```
+
+```{r}
+JSTOR_2wordcor(unpack_multi,"gender",c("hunt","hunter","gatherer","gather","role","division","labor"), span = 0.5, yearfrom = 1970)
+ggsave("figures/2words_gender_labor.png")
+ggsave("figures/2words_gender_labor.svg")
+```
+
+
+```{r}
+JSTOR_2wordcor(unpack_multi,"gender",c("intersectionality","race","queer","identity","intersectional","sexuality"), span = 0.6, yearfrom = 1970)
+ggsave("figures/2words_gender_intersect.png")
+ggsave("figures/2words_gender_intersect.svg")
+```
+
+### Some summary statistics on the words "gender", "feminist", and "feminism"
+
+```{r}
+feminism <- as.matrix(unpack_multi$wordcounts[,c("gender", "feminist", "feminism")])
+# instances of the word
+sum(feminism!=0)
+# articles with the word
+```
+
+The total count of these words is `r colSums(feminism)`.
+
+The number of articles containing these words is `r sum(feminism!=0)`
+
+### Some summary statistics on the corpus used here
+
+```{r}
+journal_names <- gsub("\t", "", unique(unpack_multi$bibliodata$author)) # colnames are offset!
+number_of_journals <- length(journal_names)
+number_of_articles <- length(unique(unpack_multi$bibliodata$doi)) # colnames are offset!
+```
+
+The names of the journals in this corpus are `r journal_names`
+
+The number of journals is `r number_of_journals`
+
+The total number of articles is `r number_of_articles`
+
+### Cluster analyses of articles containing the word 'gender'
+
+```{r}
+# these analyses were rather slow on my computer!
+# subset to get only articles that have the word 'gender'
+nouns <- JSTOR_dtmofnouns(unpack_multi, word = "gender", sparse = 1, POStag = TRUE)
+# do cluster analysis 
+JSTOR_clusterbywords(nouns, "gender", f = 0.01)
+```
+
+
+
+
+
