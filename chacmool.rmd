@@ -90,6 +90,7 @@ The total number of articles is `r number_of_articles`
 nouns <- JSTOR_dtmofnouns(unpack_multi, word = "gender", sparse = 1, POStag = TRUE)
 # do cluster analysis 
 gender_cluster <- JSTOR_clusterbywords(nouns, "gender", f = 0.01)
+gender_cluster
 ```
 
 
