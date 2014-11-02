@@ -32,7 +32,7 @@ library(JSTORr)
 ## 'Miscellaneous', for each of the journal titles we used here.  
 
 # five journals data
-load("F:/My Documents/My UW/Research/1402 JSTOR text/corpus/five_journals.RData")
+load("F:/My Documents/My Papers/conferences/Chacmool2014/unpack_multi.RData")
 ```
 
 
@@ -59,9 +59,6 @@ ggsave("figure/2words_gender_intersect.svg")
 
 ```{r}
 feminism <- as.matrix(unpack_multi$wordcounts[,c("gender", "feminist", "feminism")])
-# instances of the word
-sum(feminism!=0)
-# articles with the word
 ```
 
 The total count of these words is `r colSums(feminism)`.
