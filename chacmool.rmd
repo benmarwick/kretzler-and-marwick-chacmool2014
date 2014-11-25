@@ -59,11 +59,22 @@ ggsave("figure/2words_gender_intersect.svg")
 
 ```{r}
 feminism <- as.matrix(unpack_multi$wordcounts[,c("gender", "feminist", "feminism")])
+feminism <- as.matrix(unpack_multi$wordcounts[,c("gender", "feminist", "feminism")])
 ```
 
 The total count of these words is `r colSums(feminism)`.
 
 The number of articles containing these words is `r sum(feminism!=0)`
+
+```{r}
+# total count for each word?
+no_gen_articles<-subset(feminism, feminism[,1] >0)
+length(no_gen_articles[,1]) # number of articles containing "gender"
+no_feminist_articles<-subset(feminism, feminism[,2] >0)
+length(no_feminist_articles[,2]) # number of articles containing "feminism"
+no_feminism_articles<-subset(feminism, feminism[,3] >0)
+length(no_feminism_articles[,3]) # number of articles containing "feminist"
+```
 
 ### Some summary statistics on the corpus used here
 
@@ -81,7 +92,7 @@ The total number of articles is `r number_of_articles`
 
 ### Cluster analyses of articles containing the word 'gender'
 
-```{r}
+```{r, eval = FALSE}
 # these analyses were rather slow on my computer!
 # subset to get only articles that have the word 'gender'
 nouns <- JSTOR_dtmofnouns(unpack_multi, word = "gender", sparse = 1, POStag = TRUE)
