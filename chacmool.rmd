@@ -7,14 +7,13 @@ output: html_document
 
 ## A Brief Case Study: Gender Research and the Role of Feminist Theory (Chacamool presentation)
 
-Here we provide the code used to generate the figures in the 
-presentation.
+Here we provide the code used to generate the figures in the presentation. This document is written is [rmarkdown](http://rmarkdown.rstudio.com/) and can be rendered into an HTML file containing the results of the analysis using `rmarkdown::render("chacmool.rmd")` or if you are using [RStudio](http://www.rstudio.com/) (as we do), then the "Knit" command (Ctrl+Shift+K) will render the document and display a preview of it.
 
 The data can be obtained freely from http://dfr.jstor.org/ 
-We can share our data by request, but we're not sure that
-the JSTOR terms of service allow us to post it publically. 
+We can share our data by request, but we're not sure that the JSTOR terms of service allow us to post it publically. 
 
 ```{r setup}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE)
 # If you don't already have JSTORr, then  you need  to 
 # download and install the package (do this only once ever per computer)
 # uncomment and run the next two lines:
@@ -32,7 +31,7 @@ library(JSTORr)
 ## 'Miscellaneous', for each of the journal titles we used here.  
 
 # five journals data
-load("F:/My Documents/My Papers/conferences/Chacmool2014/unpack_multi.RData")
+load("G:/My Documents/My Papers/conferences/Chacmool2014/unpack_multi.RData")
 ```
 
 
@@ -59,7 +58,6 @@ ggsave("figure/2words_gender_intersect.svg")
 
 ```{r}
 feminism <- as.matrix(unpack_multi$wordcounts[,c("gender", "feminist", "feminism")])
-feminism <- as.matrix(unpack_multi$wordcounts[,c("gender", "feminist", "feminism")])
 ```
 
 The total count of these words is `r colSums(feminism)`.
@@ -68,13 +66,34 @@ The number of articles containing these words is `r sum(feminism!=0)`
 
 ```{r}
 # total count for each word?
-no_gen_articles<-subset(feminism, feminism[,1] >0)
-length(no_gen_articles[,1]) # number of articles containing "gender"
-no_feminist_articles<-subset(feminism, feminism[,2] >0)
-length(no_feminist_articles[,2]) # number of articles containing "feminism"
-no_feminism_articles<-subset(feminism, feminism[,3] >0)
-length(no_feminism_articles[,3]) # number of articles containing "feminist"
+no_gen_articles <- subset(feminism, feminism[,1] >0)
+count_gender_articles <- length(no_gen_articles[,1]) # number of articles containing "gender"
+
+no_feminist_articles <- subset(feminism, feminism[,2] >0)
+count_feminism_articles <- length(no_feminist_articles[,2]) # number of articles containing "feminism"
+
+no_feminism_articles <- subset(feminism, feminism[,3] >0)
+count_feminist_articles <- length(no_feminism_articles[,3]) # number of articles containing "feminist"
+
+# percent of articles containing 'gender' that also contain feminis*
+gender_and_fem <- round((count_feminism_articles + count_feminist_articles) / count_gender_articles * 100, 0) 
+
+# this number rises to what after 1984?
+## first subset the data to 1984 and later...
+bibliodata <- data.frame(doi = unpack_multi$bibliodata[ ,x],
+                         year = as.numeric(unpack_multi$bibliodata[ ,year]),
+                         stringsAsFactors = FALSE)
+feminism <- data.frame(feminism)
+feminism$doi <- rownames(feminism)
+feminism_year <- merge(feminism, bibliodata, by =  'doi')
+after_1984 <- feminism_year[feminism_year$year %in% 1982:1987, ]
+## now compute percentage again...
+after_1984_colsums <- data.frame(t(colSums(after_1984 != 0)))
+after_1984_gender_and_fem <- round((after_1984_colsums$feminist + after_1984_colsums$feminism) / after_1984_colsums$gender * 100, 0)
 ```
+
+
+Feminism appears in `r gender_and_fem`% of publications on gender; this number rises to `r after_1984_gender_and_fem`% for articles published during 1982-7 
 
 ### Some summary statistics on the corpus used here
 
@@ -101,6 +120,14 @@ gender_cluster <- JSTOR_clusterbywords(nouns, "gender", f = 0.01)
 gender_cluster
 ```
 
+
+### Computational environment
+
+This analysis was performed using R version `r getRversion()` and the following packages and versions: 
+
+```{r}
+sessionInfo()
+```
 
 
 
