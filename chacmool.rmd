@@ -46,7 +46,10 @@ ggsave("figure/2words_gender_feminism.svg")
 ```
 
 ```{r}
-JSTOR_2wordcor(unpack_multi,"gender",c("hunt","hunter","gatherer","gather","role","division","labor"), span = 0.5, yearfrom = 1970)
+JSTOR_2wordcor(unpack_multi,"gender",c("hunt","hunter","gatherer","gather","role","division","labor"), span = 0.5, yearfrom = 1970) +
+   theme(axis.title.x = element_text(size = 16, colour = 'black'),
+         axis.title.y = element_text(size = 16, colour = 'black'),
+         axis.text.x  = element_text(angle = 90, vjust = 0.5, size = 16, colour = 'black'))
 ggsave("figure/2words_gender_labor.png")
 ggsave("figure/2words_gender_labor.svg")
 ```
