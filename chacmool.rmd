@@ -36,7 +36,11 @@ load("G:/My Documents/My Papers/conferences/Chacmool2014/unpack_multi.RData")
 
 
 ```{r}
-JSTOR_2words(unpack_multi, "gender", c("feminism", "feminist"), span = 0.48, yearfrom = 1970)
+JSTOR_2words(unpack_multi, "gender", c("feminism", "feminist"), span = 0.48, yearfrom = 1970) +
+   theme(axis.title.x = element_text(size = 16, colour = 'black'),
+         axis.title.y = element_text(size = 16, colour = 'black'),
+         axis.text.x  = element_text(angle = 90, vjust = 0.5, size = 16, colour = 'black'))
+ggsave("figure/2words_gender_feminism.png")
 ggsave("figure/2words_gender_feminism.png")
 ggsave("figure/2words_gender_feminism.svg")
 ```
