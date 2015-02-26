@@ -9,8 +9,7 @@ output: html_document
 
 Here we provide the code used to generate the figures in the presentation. This document is written is [rmarkdown](http://rmarkdown.rstudio.com/) and can be rendered into an HTML file containing the results of the analysis using `rmarkdown::render("chacmool.rmd")` or if you are using [RStudio](http://www.rstudio.com/) (as we do), then the "Knit" command (Ctrl+Shift+K) will render the document and display a preview of it.
 
-The data can be obtained freely from http://dfr.jstor.org/ 
-We can share our data by request, but we're not sure that the JSTOR terms of service allow us to post it publically. 
+The data can be obtained freely from http://dfr.jstor.org/ and are included here in the 'data' folder
 
 ```{r setup}
 knitr::opts_chunk$set(message=FALSE, warning=FALSE)
@@ -24,31 +23,28 @@ library(JSTORr)
 
 
 ```{r get-data}
-## The TOS for JSTOR DFR does not appear to allow redistribution of the data
-## so we do not include it here. Please contact us if you'd like a copy and 
-## we'll send it to you. You should be able to reproduce our dataset by
-## searching JSTOR DFR and filtering 'Article Type' on 'Research article ' and 
-## 'Miscellaneous', for each of the journal titles we used here.  
+# The data are included here with permission from DFR
 
-# five journals data
-load("G:/My Documents/My Papers/conferences/Chacmool2014/unpack_multi.RData")
+# American Antiquity data
+load("data/unpack1grams.rdata")
 
 # SAA guide says 15 cm width max for figs, JPEG, colour ok
 ```
 
 
 ```{r}
-JSTOR_2words(unpack_multi, "gender", c("feminism", "feminist"), span = 0.48, yearfrom = 1970, yearto = 2007) +
+plot1 <- JSTOR_2words(unpack1grams, "gender", c("feminism", "feminist"), span = 0.48, yearfrom = 1970, yearto = 2007) 
+plot1$plot +
+  scale_y_continuous(trans=log2_trans()) + 
    theme(axis.title.x = element_text(size = 16, colour = 'black'),
          axis.title.y = element_text(size = 16, colour = 'black'),
          axis.text.x  = element_text(angle = 90, vjust = 0.5, size = 16, colour = 'black'))
-ggsave("figure/2words_gender_feminism.png")
-ggsave("figure/2words_gender_feminism.png")
+ggsave("figure/2words_gender_feminism.png", width = 15, units = "cm")
 ggsave("figure/2words_gender_feminism.svg")
 ```
 
 ```{r}
-JSTOR_2wordcor(unpack_multi,"gender",c("hunt","hunter","gatherer","gather","role","division","labor"), span = 0.5, yearfrom = 1970, yearto = 2007) +
+JSTOR_2wordcor(unpack1grams,"gender",c("hunt","hunter","gatherer","gather","role","division","labor"), span = 0.5, yearfrom = 1970, yearto = 2007) +
   xlab("correlation between 'gender' and 'hunt', etc.") +
    theme(axis.title.x = element_text(size = 16, colour = 'black'),
          axis.title.y = element_text(size = 16, colour = 'black'),
@@ -60,7 +56,7 @@ ggsave("figure/2words_gender_labor.svg")
 
 
 ```{r}
-JSTOR_2wordcor(unpack_multi,"gender",c("intersectionality","race","queer","identity","intersectional","sexuality"), span = 0.6, yearfrom = 1970, yearto = 2007) +
+JSTOR_2wordcor(unpack1grams,"gender",c("intersectionality","race","queer","identity","intersectional","sexuality"), span = 0.6, yearfrom = 1970, yearto = 2007) +
   theme(axis.title.x = element_text(size = 16, colour = 'black'),
          axis.title.y = element_text(size = 16, colour = 'black'),
          axis.text.x  = element_text(angle = 90, vjust = 0.5, size = 16, colour = 'black')) 
@@ -71,7 +67,7 @@ ggsave("figure/2words_gender_intersect.svg")
 ### Some summary statistics on the words "gender", "feminist", and "feminism"
 
 ```{r}
-feminism <- as.matrix(unpack_multi$wordcounts[,c("gender", "feminist", "feminism")])
+feminism <- as.matrix(unpack1grams$wordcounts[,c("gender", "feminist", "feminism")])
 ```
 
 The total count of these words is `r colSums(feminism)`.
@@ -94,8 +90,8 @@ gender_and_fem <- round((count_feminism_articles + count_feminist_articles) / co
 
 # this number rises to what after 1984?
 ## first subset the data to 1984 and later...
-bibliodata <- data.frame(doi = unpack_multi$bibliodata[ ,x],
-                         year = as.numeric(unpack_multi$bibliodata[ ,year]),
+bibliodata <- data.frame(doi = unpack1grams$bibliodata[ ,'x'],
+                         year = as.numeric(unpack1grams$bibliodata[ ,'year']),
                          stringsAsFactors = FALSE)
 feminism <- data.frame(feminism)
 feminism$doi <- rownames(feminism)
@@ -106,15 +102,20 @@ after_1984_colsums <- data.frame(t(colSums(after_1984 != 0)))
 after_1984_gender_and_fem <- round((after_1984_colsums$feminist + after_1984_colsums$feminism) / after_1984_colsums$gender * 100, 0)
 ```
 
+Articles containing "gender": `r count_gender_articles`
+
+Articles containing "feminism": `r count_feminism_articles`
+
+Articles containing "feminist": `r count_feminist_articles`
 
 Feminism appears in `r gender_and_fem`% of publications on gender; this number rises to `r after_1984_gender_and_fem`% for articles published during 1982-7 
 
 ### Some summary statistics on the corpus used here
 
 ```{r}
-journal_names <- gsub("\t", "", unique(unpack_multi$bibliodata$author)) # colnames are offset!
+journal_names <- gsub("\t", "", unique(unpack1grams$bibliodata$author)) # colnames are offset!
 number_of_journals <- length(journal_names)
-number_of_articles <- length(unique(unpack_multi$bibliodata$doi)) # colnames are offset!
+number_of_articles <- length(unique(unpack1grams$bibliodata$doi)) # colnames are offset!
 ```
 
 The names of the journals in this corpus are `r journal_names`
@@ -128,7 +129,7 @@ The total number of articles is `r number_of_articles`
 ```{r, eval = FALSE}
 # these analyses were rather slow on my computer!
 # subset to get only articles that have the word 'gender'
-nouns <- JSTOR_dtmofnouns(unpack_multi, word = "gender", sparse = 1, POStag = TRUE)
+nouns <- JSTOR_dtmofnouns(unpack1grams, word = "gender", sparse = 1, POStag = TRUE)
 # do cluster analysis 
 gender_cluster <- JSTOR_clusterbywords(nouns, "gender", f = 0.01)
 gender_cluster
